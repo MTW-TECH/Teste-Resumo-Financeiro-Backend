@@ -5,6 +5,8 @@ from dataclasses import dataclass
 class Company:
     id: int
     name: str
-    industry: str
-    founded_year: int
-    employee_count: int
+    cnpj: str
+    state: str
+    city: str
+    active: bool
+    tax_regime: str
