@@ -3,7 +3,6 @@ from app.domain.repositories.financial_repository import FinancialRepository
 
 
 class GetFinancialSummaryUseCase:
-    """Orchestrates retrieval of the financial summary."""
 
     def __init__(self, financial_repository: FinancialRepository) -> None:
         self._financial_repository = financial_repository

@@ -10,7 +10,7 @@ from app.presentation.middleware.auth import require_auth
 financial_bp = Blueprint("financial", __name__, url_prefix="/financial")
 
 
-@financial_bp.route("/FinancialSummary/", methods=["GET"])
+@financial_bp.route("/financialSummary/", methods=["GET"])
 @require_auth
 @inject
 def get_financial_summary(
