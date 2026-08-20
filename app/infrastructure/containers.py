@@ -7,7 +7,7 @@ from app.application.use_cases.user.get_user_by_id import GetUserByIdUseCase
 from app.infrastructure.auth.cognito_token_verifier import CognitoTokenVerifier
 from app.infrastructure.database import DatabaseManager
 from app.infrastructure.repositories.company_repository_impl import SqlAlchemyCompanyRepository
-from app.infrastructure.repositories.financial_repository_impl import InMemoryFinancialRepository
+from app.infrastructure.repositories.financial_repository_impl import SqlAlchemyFinancialRepository
 from app.infrastructure.repositories.user_repository_impl import SqlAlchemyUserRepository
 
 
@@ -45,7 +45,7 @@ class Container(containers.DeclarativeContainer):
     # Infrastructure layer: singletons are wired from a (class, kwargs) table.
     # A string value means "use the already-built singleton with this name" instead of a literal/config value.
     _SINGLETONS = {
-        "financial_repository": (InMemoryFinancialRepository, {}),
+        "financial_repository": (SqlAlchemyFinancialRepository, {"session_factory": "financial_remote_session_factory"}),
         "company_repository": (SqlAlchemyCompanyRepository, {"session_factory": "financial_remote_session_factory"}),
         "user_repository": (SqlAlchemyUserRepository, {"session_factory": "localdb_session_factory"}),
         "cognito_token_verifier": (
