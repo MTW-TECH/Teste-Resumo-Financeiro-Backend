@@ -19,9 +19,9 @@ def create_app() -> Flask:
     # Eagerly create tables at startup instead of on first repository use.
     container.db_session_factory()
 
-    app.register_blueprint(financial_bp)
-    app.register_blueprint(company_bp)
-    app.register_blueprint(user_bp)
+    api_prefix = f"/{app.config['API_VERSION']}"
+    for blueprint in (financial_bp, company_bp, user_bp):
+        app.register_blueprint(blueprint, url_prefix=f"{api_prefix}{blueprint.url_prefix}")
 
     @app.errorhandler(404)
     def not_found(error):

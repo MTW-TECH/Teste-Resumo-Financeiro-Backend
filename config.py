@@ -14,3 +14,5 @@ class Config:
     )
     COGNITO_USER_POOL_ID = os.environ.get("COGNITO_USER_POOL_ID", "us-east-1_dRwH4FHq3")
     COGNITO_REGION = os.environ.get("COGNITO_REGION", "us-east-1")
+
+    API_VERSION = os.environ.get("API_VERSION", "v1")
