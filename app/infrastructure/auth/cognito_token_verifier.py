@@ -17,6 +17,6 @@ class CognitoTokenVerifier:
             issuer=self._issuer,
             options={"verify_aud": False},
         )
-        if claims.get("token_use") != "access":
-            raise jwt.InvalidTokenError("Token is not a Cognito access token")
+        if claims.get("token_use") != "id":
+            raise jwt.InvalidTokenError("Token is not a Cognito ID token")
         return claims
