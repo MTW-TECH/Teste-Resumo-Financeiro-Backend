@@ -22,11 +22,11 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
     def _to_entity(model: CompanyModel) -> Company:
         return Company(
             id=model.id,
-            name=model.name,
+            nome=model.nome,
             cnpj=model.cnpj,
-            state=model.state,
-            city=model.city,
-            active=model.active,
-            tax_regime=model.tax_regime,
+            uf=model.uf,
+            cidade=model.cidade,
+            ativo=model.ativo,
+            regime_atual=model.regime_atual,
         )
 

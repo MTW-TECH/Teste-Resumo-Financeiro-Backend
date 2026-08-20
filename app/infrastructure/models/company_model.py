@@ -9,9 +9,9 @@ class CompanyModel(RemoteBase):
     __table_args__ = {"schema": "candidato_paulo"}
 
     id = Column("Id", Integer, primary_key=True)
-    name = Column("Nome", String)
+    nome = Column("Nome", String)
     cnpj = Column("Cnpj", String)
-    state = Column("Uf", String)
-    city = Column("Cidade", String)
-    active = Column("Ativo", Boolean)
-    tax_regime = Column("RegimeAtual", String)
+    uf = Column("Uf", String)
+    cidade = Column("Cidade", String)
+    ativo = Column("Ativo", Boolean)
+    regime_atual = Column("RegimeAtual", String)

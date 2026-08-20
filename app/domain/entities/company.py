@@ -4,9 +4,9 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Company:
     id: int
-    name: str
+    nome: str
     cnpj: str
-    state: str
-    city: str
-    active: bool
-    tax_regime: str
+    uf: str
+    cidade: str
+    ativo: bool
+    regime_atual: str
