@@ -24,40 +24,34 @@ class Container(containers.DeclarativeContainer):
 
     config = providers.Configuration()
 
-    # Infrastructure layer
-    financial_repository = providers.Singleton(InMemoryFinancialRepository)
-    company_repository = providers.Singleton(InMemoryCompanyRepository)
+    # Infrastructure layer: singletons are wired from a (class, kwargs) table.
+    # A string value means "use the already-built singleton with this name" instead of a literal/config value.
+    _SINGLETONS = {
+        "financial_repository": (InMemoryFinancialRepository, {}),
+        "company_repository": (InMemoryCompanyRepository, {}),
+        "db_session_factory": (create_session_factory, {"database_url": config.database_url}),
+        "user_repository": (SqlAlchemyUserRepository, {"session_factory": "db_session_factory"}),
+        "cognito_token_verifier": (
+            CognitoTokenVerifier,
+            {"user_pool_id": config.cognito_user_pool_id, "region": config.cognito_region},
+        ),
+    }
+    for _name, (_cls, _kwargs) in _SINGLETONS.items():
+        _resolved_kwargs = {
+            key: (locals()[value] if isinstance(value, str) else value)
+            for key, value in _kwargs.items()
+        }
+        locals()[_name] = providers.Singleton(_cls, **_resolved_kwargs)
+    del _SINGLETONS, _name, _cls, _kwargs, _resolved_kwargs
 
-    db_session_factory = providers.Singleton(
-        create_session_factory,
-        database_url=config.database_url,
-    )
-    user_repository = providers.Singleton(
-        SqlAlchemyUserRepository,
-        session_factory=db_session_factory,
-    )
-
-    cognito_token_verifier = providers.Singleton(
-        CognitoTokenVerifier,
-        user_pool_id=config.cognito_user_pool_id,
-        region=config.cognito_region,
-    )
-
-    # Application layer
-    get_financial_summary_use_case = providers.Factory(
-        GetFinancialSummaryUseCase,
-        financial_repository=financial_repository,
-    )
-    get_company_list_use_case = providers.Factory(
-        GetCompanyListUseCase,
-        company_repository=company_repository,
-    )
-    get_user_by_id_use_case = providers.Factory(
-        GetUserByIdUseCase,
-        user_repository=user_repository,
-    )
-    get_current_user_use_case = providers.Factory(
-        GetCurrentUserUseCase,
-        user_repository=user_repository,
-    )
+    # Application layer: use cases are wired from a (class, repository kwarg, repository provider) table
+    _USE_CASES = {
+        "get_financial_summary_use_case": (GetFinancialSummaryUseCase, "financial_repository", financial_repository),
+        "get_company_list_use_case": (GetCompanyListUseCase, "company_repository", company_repository),
+        "get_user_by_id_use_case": (GetUserByIdUseCase, "user_repository", user_repository),
+        "get_current_user_use_case": (GetCurrentUserUseCase, "user_repository", user_repository),
+    }
+    for _name, (_use_case_cls, _repo_kwarg, _repo_provider) in _USE_CASES.items():
+        locals()[_name] = providers.Factory(_use_case_cls, **{_repo_kwarg: _repo_provider})
+    del _USE_CASES, _name, _use_case_cls, _repo_kwarg, _repo_provider
 
