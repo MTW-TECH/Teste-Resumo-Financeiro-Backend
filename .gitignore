@@ -17,7 +17,7 @@ dist/
 
 # Environment variables
 .env
-.env.*
+# .env.*
 
 # Testing / coverage
 .pytest_cache/

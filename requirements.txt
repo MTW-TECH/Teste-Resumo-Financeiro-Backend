@@ -1,2 +1,7 @@
 Flask==3.0.3
 dependency-injector==4.42.0
+SQLAlchemy==2.0.35
+psycopg2-binary==2.9.9
+PyJWT==2.9.0
+cryptography==43.0.1
+python-dotenv==1.0.1
