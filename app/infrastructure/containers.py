@@ -19,6 +19,7 @@ class Container(containers.DeclarativeContainer):
             "app.presentation.controllers.company_controller",
             "app.presentation.controllers.user_controller",
             "app.presentation.middleware.auth",
+            "app.presentation.middleware.cors",
         ]
     )
 

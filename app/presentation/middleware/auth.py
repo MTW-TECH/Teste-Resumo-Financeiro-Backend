@@ -9,8 +9,6 @@ from app.infrastructure.containers import Container
 
 
 def require_auth(f):
-    """Validates the `Authorization: Bearer <token>` header against Cognito
-    and exposes the decoded claims via `flask.g.current_user_claims`."""
 
     @wraps(f)
     @inject

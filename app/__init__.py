@@ -4,6 +4,7 @@ from app.infrastructure.containers import Container
 from app.presentation.controllers.company_controller import company_bp
 from app.presentation.controllers.financial_controller import financial_bp
 from app.presentation.controllers.user_controller import user_bp
+from app.presentation.middleware.cors import configure_cors
 
 
 def create_app() -> Flask:
@@ -11,6 +12,7 @@ def create_app() -> Flask:
 
     app = Flask(__name__)
     app.config.from_object("config.Config")
+    configure_cors(app)
     container.config.database_url.from_value(app.config["DATABASE_URL"])
     container.config.cognito_user_pool_id.from_value(app.config["COGNITO_USER_POOL_ID"])
     container.config.cognito_region.from_value(app.config["COGNITO_REGION"])
