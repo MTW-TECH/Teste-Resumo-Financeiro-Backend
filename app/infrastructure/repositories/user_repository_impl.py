@@ -2,16 +2,44 @@ from typing import Optional
 
 from app.domain.entities.user import User
 from app.domain.repositories.user_repository import UserRepository
+from app.infrastructure.models.user_model import UserModel
 
 
-class InMemoryUserRepository(UserRepository):
-    """In-memory implementation, standing in for a database/external API call."""
+class SqlAlchemyUserRepository(UserRepository):
+    """Persists users in the relational database via SQLAlchemy."""
 
-    _users = {
-        1: User(id=1, name="Alice Johnson", email="alice.johnson@example.com", role="admin"),
-        2: User(id=2, name="Bob Smith", email="bob.smith@example.com", role="analyst"),
-        3: User(id=3, name="Carol Davis", email="carol.davis@example.com", role="viewer"),
-    }
+    def __init__(self, session_factory) -> None:
+        self._session_factory = session_factory
 
     def get_by_id(self, user_id: int) -> Optional[User]:
-        return self._users.get(user_id)
+        with self._session_factory() as session:
+            model = session.get(UserModel, user_id)
+            return self._to_entity(model) if model else None
+
+    def get_by_cognito_sub(self, cognito_sub: str) -> Optional[User]:
+        with self._session_factory() as session:
+            model = session.query(UserModel).filter_by(cognito_sub=cognito_sub).first()
+            return self._to_entity(model) if model else None
+
+    def upsert_from_claims(self, cognito_sub: str, email: str, name: str) -> User:
+        with self._session_factory() as session:
+            model = session.query(UserModel).filter_by(cognito_sub=cognito_sub).first()
+            if model is None:
+                model = UserModel(cognito_sub=cognito_sub, email=email, name=name, role="viewer")
+                session.add(model)
+            else:
+                model.email = email
+                model.name = name
+            session.commit()
+            session.refresh(model)
+            return self._to_entity(model)
+
+    @staticmethod
+    def _to_entity(model: UserModel) -> User:
+        return User(
+            id=model.id,
+            name=model.name,
+            email=model.email,
+            role=model.role,
+            cognito_sub=model.cognito_sub,
+        )

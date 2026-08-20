@@ -7,3 +7,4 @@ class User:
     name: str
     email: str
     role: str
+    cognito_sub: str
