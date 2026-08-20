@@ -3,8 +3,8 @@ from dataclasses import asdict
 from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, g, jsonify
 
-from app.application.use_cases.get_current_user import GetCurrentUserUseCase
-from app.application.use_cases.get_user_by_id import GetUserByIdUseCase
+from app.application.use_cases.user.get_current_user import GetCurrentUserUseCase
+from app.application.use_cases.user.get_user_by_id import GetUserByIdUseCase
 from app.infrastructure.containers import Container
 from app.presentation.middleware.auth import require_auth
 

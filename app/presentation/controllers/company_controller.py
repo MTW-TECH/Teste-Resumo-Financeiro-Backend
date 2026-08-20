@@ -3,7 +3,7 @@ from dataclasses import asdict
 from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, jsonify
 
-from app.application.use_cases.get_company_list import GetCompanyListUseCase
+from app.application.use_cases.company.get_company_list import GetCompanyListUseCase
 from app.infrastructure.containers import Container
 from app.presentation.middleware.auth import require_auth
 

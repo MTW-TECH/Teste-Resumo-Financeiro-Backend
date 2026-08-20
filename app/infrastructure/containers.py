@@ -1,9 +1,9 @@
 from dependency_injector import containers, providers
 
-from app.application.use_cases.get_company_list import GetCompanyListUseCase
-from app.application.use_cases.get_current_user import GetCurrentUserUseCase
-from app.application.use_cases.get_financial_summary import GetFinancialSummaryUseCase
-from app.application.use_cases.get_user_by_id import GetUserByIdUseCase
+from app.application.use_cases.company.get_company_list import GetCompanyListUseCase
+from app.application.use_cases.company.get_financial_summary import GetFinancialSummaryUseCase
+from app.application.use_cases.user.get_current_user import GetCurrentUserUseCase
+from app.application.use_cases.user.get_user_by_id import GetUserByIdUseCase
 from app.infrastructure.auth.cognito_token_verifier import CognitoTokenVerifier
 from app.infrastructure.database import create_session_factory
 from app.infrastructure.repositories.company_repository_impl import InMemoryCompanyRepository

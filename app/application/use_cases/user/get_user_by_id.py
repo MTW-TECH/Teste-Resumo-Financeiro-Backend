@@ -5,7 +5,6 @@ from app.domain.repositories.user_repository import UserRepository
 
 
 class GetUserByIdUseCase:
-    """Orchestrates retrieval of a single user by id."""
 
     def __init__(self, user_repository: UserRepository) -> None:
         self._user_repository = user_repository
