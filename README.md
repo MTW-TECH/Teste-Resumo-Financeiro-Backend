@@ -1,20 +1,20 @@
 # Financial Flask API
 
-A Flask REST API built with Clean Architecture (Domain, Application, Presentation, Infrastructure layers) and dependency injection via [`dependency-injector`](https://python-dependency-injector.ets-labs.org/).
+Uma API REST em Flask construída com Clean Architecture (camadas de Domain, Application, Presentation e Infrastructure) e injeção de dependência via [`dependency-injector`](https://python-dependency-injector.ets-labs.org/).
 
-## Project layout
+## Estrutura do projeto
 
 ```
 app/
-  domain/            # Entities & repository interfaces (no framework dependencies)
+  domain/            # Entidades e interfaces de repositório (sem dependências de framework)
     entities/
     repositories/
-  application/        # Use cases orchestrating domain logic
+  application/        # Casos de uso orquestrando a lógica de domínio
     use_cases/
-  infrastructure/      # Concrete repository implementations & DI container
+  infrastructure/      # Implementações concretas de repositório e container de DI
     repositories/
     containers.py
-  presentation/        # Flask blueprints/controllers (HTTP layer)
+  presentation/        # Blueprints/controllers Flask (camada HTTP)
     controllers/
 config.py
 run.py
@@ -22,16 +22,16 @@ run.py
 
 ## Endpoints
 
-| Method | Path                              | Description                  |
+| Método | Path                              | Descrição                    |
 |--------|------------------------------------|-------------------------------|
-| GET    | `/v1/financial/financialSummary/`  | Returns a financial summary   |
-| GET    | `/v1/company/list`                 | Returns the list of companies |
-| GET    | `/v1/user/me`                      | Returns current user          |
-| GET    | `/v1/user/<int:user_id>`           | Returns a user by id          |
+| GET    | `/v1/financial/financialSummary/`  | Retorna um resumo financeiro  |
+| GET    | `/v1/company/list`                 | Retorna a lista de empresas   |
+| GET    | `/v1/user/me`                      | Retorna o usuário atual       |
+| GET    | `/v1/user/<int:user_id>`           | Retorna um usuário por id     |
 
-> Note: the user endpoint uses `/v1/user/<id>` (e.g. `/v1/user/1`) since an id must be supplied to identify which user to fetch.
+> Observação: o endpoint de usuário usa `/v1/user/<id>` (ex.: `/v1/user/1`), pois um id deve ser informado para identificar qual usuário buscar.
 
-## Setup
+## Configuração
 
 ```bash
 python -m venv .venv
@@ -40,50 +40,50 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-## Run
+## Execução
 
 ```bash
 python run.py
 ```
 
-The API will be available at `http://localhost:5000`.
+A API estará disponível em `http://localhost:5000`.
 
-## Swagger docs (public)
+## Documentação Swagger (pública)
 
 - UI: `http://localhost:5000/v1/docs/`
 - OpenAPI JSON: `http://localhost:5000/v1/docs/openapi.json`
 
-The documentation routes are public and are not protected by JWT. Business endpoints still require a bearer token.
+As rotas de documentação são públicas e não são protegidas por JWT. Os endpoints de negócio continuam exigindo um token bearer.
 
-## Tests
+## Testes
 
-Use Docker to run tests in a consistent environment.
+Use Docker para executar os testes em um ambiente consistente.
 
-Start the database service:
+Inicie o serviço de banco de dados:
 
 ```bash
 docker compose up -d db
 ```
 
-Run only endpoint tests (`/company/list`, `/financial/financialSummary/`, `/user/me`):
+Execute apenas os testes dos endpoints (`/company/list`, `/financial/financialSummary/`, `/user/me`):
 
 ```bash
 docker compose run --rm api sh -lc "pip install --no-cache-dir -r requirements-dev.txt >/tmp/pip-tests.log && pytest -q tests/presentation/controllers/test_protected_endpoints.py"
 ```
 
-Run endpoint tests with coverage:
+Execute os testes dos endpoints com cobertura:
 
 ```bash
 docker compose run --rm api sh -lc "pip install --no-cache-dir -r requirements-dev.txt >/tmp/pip-tests.log && pytest -q --cov=app --cov-report=term-missing tests/presentation/controllers/test_protected_endpoints.py"
 ```
 
-Run the full test suite with coverage:
+Execute toda a suíte de testes com cobertura:
 
 ```bash
 docker compose run --rm api sh -lc "pip install --no-cache-dir -r requirements-dev.txt >/tmp/pip-tests.log && pytest -q --cov=app --cov-report=term-missing"
 ```
 
-## Example requests
+## Exemplos de requisições
 
 ```bash
 curl http://localhost:5000/v1/financial/financialSummary/
