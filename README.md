@@ -24,11 +24,12 @@ run.py
 
 | Method | Path                              | Description                  |
 |--------|------------------------------------|-------------------------------|
-| GET    | `/financial/FinancialSummary/`     | Returns a financial summary   |
-| GET    | `/company/list`                    | Returns the list of companies |
-| GET    | `/user/<int:user_id>`              | Returns a user by id          |
+| GET    | `/v1/financial/financialSummary/`  | Returns a financial summary   |
+| GET    | `/v1/company/list`                 | Returns the list of companies |
+| GET    | `/v1/user/me`                      | Returns current user          |
+| GET    | `/v1/user/<int:user_id>`           | Returns a user by id          |
 
-> Note: the user endpoint uses `/user/<id>` (e.g. `/user/1`) since an id must be supplied to identify which user to fetch.
+> Note: the user endpoint uses `/v1/user/<id>` (e.g. `/v1/user/1`) since an id must be supplied to identify which user to fetch.
 
 ## Setup
 
@@ -46,10 +47,17 @@ python run.py
 
 The API will be available at `http://localhost:5000`.
 
+## Swagger docs (public)
+
+- UI: `http://localhost:5000/v1/docs/`
+- OpenAPI JSON: `http://localhost:5000/v1/docs/openapi.json`
+
+The documentation routes are public and are not protected by JWT. Business endpoints still require a bearer token.
+
 ## Example requests
 
 ```bash
-curl http://localhost:5000/financial/FinancialSummary/
-curl http://localhost:5000/company/list
-curl http://localhost:5000/user/1
+curl http://localhost:5000/v1/financial/financialSummary/
+curl http://localhost:5000/v1/company/list
+curl http://localhost:5000/v1/user/1
 ```

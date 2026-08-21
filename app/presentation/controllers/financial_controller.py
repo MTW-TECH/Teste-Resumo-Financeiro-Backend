@@ -16,5 +16,50 @@ financial_bp = Blueprint("financial", __name__, url_prefix="/financial")
 def get_financial_summary(
     use_case: GetFinancialSummaryUseCase = Provide[Container.get_financial_summary_use_case],
 ):
-    summary = use_case.execute()
-    return jsonify(asdict(summary)), 200
+        """
+        Get financial summary
+        ---
+        tags:
+            - Financial
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Financial summary returned successfully.
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                receita:
+                                    type: string
+                                custos:
+                                    type: string
+                                taxas:
+                                    type: string
+                                lucro_liquido:
+                                    type: string
+                                ebitda:
+                                    type: string
+                                lucro:
+                                    type: string
+                                lajida:
+                                    type: string
+                                montlyData:
+                                    type: array
+                                    items:
+                                        type: object
+                                        properties:
+                                            mes:
+                                                type: string
+                                            receita:
+                                                type: number
+                                            custos:
+                                                type: number
+                                            taxa:
+                                                type: number
+            401:
+                description: Missing or invalid JWT token.
+        """
+        summary = use_case.execute()
+        return jsonify(asdict(summary)), 200

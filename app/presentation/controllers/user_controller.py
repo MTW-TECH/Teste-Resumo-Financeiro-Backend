@@ -17,6 +17,34 @@ user_bp = Blueprint("user", __name__, url_prefix="/user")
 def get_current_user(
     use_case: GetCurrentUserUseCase = Provide[Container.get_current_user_use_case],
 ):
+    """
+    Get current authenticated user
+    ---
+    tags:
+      - User
+    security:
+      - BearerAuth: []
+    responses:
+      200:
+        description: Authenticated user returned successfully.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                cognito_sub:
+                  type: string
+      401:
+        description: Missing or invalid JWT token.
+    """
     claims = g.current_user_claims
     user = use_case.execute(
         cognito_sub=claims["sub"],
@@ -33,6 +61,50 @@ def get_user_by_id(
     user_id: int,
     use_case: GetUserByIdUseCase = Provide[Container.get_user_by_id_use_case],
 ):
+    """
+    Get user by id
+    ---
+    tags:
+      - User
+    security:
+      - BearerAuth: []
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          type: integer
+        description: User id.
+    responses:
+      200:
+        description: User returned successfully.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                cognito_sub:
+                  type: string
+      401:
+        description: Missing or invalid JWT token.
+      404:
+        description: User not found.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+    """
     user = use_case.execute(user_id)
     if user is None:
         return jsonify({"error": f"User with id {user_id} not found"}), 404

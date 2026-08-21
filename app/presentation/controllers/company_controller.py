@@ -16,5 +16,39 @@ company_bp = Blueprint("company", __name__, url_prefix="/company")
 def get_company_list(
     use_case: GetCompanyListUseCase = Provide[Container.get_company_list_use_case],
 ):
-    companies = use_case.execute()
-    return jsonify([asdict(company) for company in companies]), 200
+        """
+        List companies
+        ---
+        tags:
+            - Company
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Company list returned successfully.
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    id:
+                                        type: integer
+                                    nome:
+                                        type: string
+                                    cnpj:
+                                        type: string
+                                    uf:
+                                        type: string
+                                    cidade:
+                                        type: string
+                                    ativo:
+                                        type: boolean
+                                    regime_atual:
+                                        type: string
+            401:
+                description: Missing or invalid JWT token.
+        """
+        companies = use_case.execute()
+        return jsonify([asdict(company) for company in companies]), 200
