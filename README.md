@@ -48,10 +48,56 @@ python run.py
 
 A API estará disponível em `http://localhost:5000`.
 
+## Execução com Docker Compose
+
+Certifique-se de que o arquivo `.env` está configurado na raiz do projeto. Para construir a imagem e iniciar a API junto com o banco de dados PostgreSQL, execute:
+
+```bash
+docker compose up --build
+```
+
+Para iniciar os serviços em segundo plano, use:
+
+```bash
+docker compose up --build -d
+```
+
+A API estará disponível em `http://localhost:5000`. Para acompanhar os logs:
+
+```bash
+docker compose logs -f api
+```
+
+Para parar e remover os containers, execute:
+
+```bash
+docker compose down
+```
+
+## Migrações do banco de dados com Alembic
+
+O projeto utiliza o Alembic para criar e atualizar a estrutura do banco de dados. Depois de iniciar os serviços com o Docker Compose, entre no container da aplicação:
+
+```bash
+docker compose exec api sh
+```
+
+Dentro do container, execute a migração até a versão mais recente:
+
+```bash
+alembic upgrade head
+```
+
+Esse comando cria as tabelas necessárias no banco de dados. Execute-o antes de utilizar os endpoints da API. Para sair do container, use `exit`.
+
 ## Documentação Swagger (pública)
 
-- UI: `http://localhost:5000/v1/docs/`
-- OpenAPI JSON: `http://localhost:5000/v1/docs/openapi.json`
+Com a aplicação em execução, acesse a documentação pelo navegador:
+
+- Interface Swagger UI: [http://localhost:5000/v1/docs/](http://localhost:5000/v1/docs/)
+- Especificação OpenAPI em JSON: [http://localhost:5000/v1/docs/openapi.json](http://localhost:5000/v1/docs/openapi.json)
+
+Na Swagger UI, é possível visualizar os endpoints e executar requisições diretamente. A especificação JSON pode ser usada por ferramentas compatíveis com OpenAPI.
 
 As rotas de documentação são públicas e não são protegidas por JWT. Os endpoints de negócio continuam exigindo um token bearer.
 

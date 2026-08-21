@@ -202,13 +202,13 @@ class SqlAlchemyFinancialRepository(FinancialRepository):
         if is_revenue:
             return valor, 0.0, 0.0
         if is_tax:
-            return 0.0, 0.0, valor
+            return 0.0, 0.0, abs(valor)
 
         if compoe_custo is None:
-            return 0.0, valor, 0.0
+            return 0.0, abs(valor), 0.0
 
         if bool(compoe_custo):
-            return 0.0, valor, 0.0
+            return 0.0, abs(valor), 0.0
         return 0.0, 0.0, 0.0
 
     @staticmethod
