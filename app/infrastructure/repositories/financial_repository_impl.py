@@ -1,11 +1,10 @@
 from collections import defaultdict
+from datetime import date, datetime
 
-from sqlalchemy import select
 from sqlalchemy.sql import text
 
 from app.domain.entities.financial_summary import FinancialSummary
 from app.domain.repositories.financial_repository import FinancialRepository
-from app.infrastructure.models.lancamento_model import LancamentoModel
 
 
 class SqlAlchemyFinancialRepository(FinancialRepository):
@@ -16,51 +15,66 @@ class SqlAlchemyFinancialRepository(FinancialRepository):
 
     def get_summary(self) -> FinancialSummary:
         with self._session_factory() as session:
-            lancamentos = session.scalars(select(LancamentoModel)).all()
+            lancamentos = session.execute(text("SELECT * FROM candidato_paulo.lancamento")).mappings().all()
             categorias = session.execute(text("SELECT * FROM candidato_paulo.categoria")).mappings().all()
             rateios = session.execute(text("SELECT * FROM candidato_paulo.lancamento_rateio")).mappings().all()
-
-        totals = {"receita": 0.0, "custos": 0.0, "taxas": 0.0}
-        monthly = defaultdict(lambda: {"receita": 0.0, "custos": 0.0, "taxa": 0.0})
 
         categorias_por_id = self._build_categorias_por_id(categorias)
         rateios_por_lancamento = self._build_rateios_por_lancamento(rateios)
 
-        for item in lancamentos:
-            valor = float(item.valor or 0)
-            data = item.data_lancamento or item.data_criacao
-            mes = data.strftime("%Y-%m") if data else "sem-data"
-            classificacao_padrao = f"{item.tipo_lancamento or ''} {item.tipo or ''}".lower()
+        totals = {"receita": 0.0, "custos": 0.0, "taxas": 0.0}
+        monthly = defaultdict(lambda: {"receita": 0.0, "custos": 0.0, "taxa": 0.0})
 
-            rateios_lancamento = rateios_por_lancamento.get(str(item.id), [])
-            if not rateios_lancamento:
+        for lancamento in lancamentos:
+            valor = self._pick(lancamento, "valor", "Valor")
+            if valor is None:
+                continue
+
+            data_lancamento = self._pick(
+                lancamento,
+                "data_lancamento",
+                "DataLancamento",
+                "data_vencimento",
+                "DataVencimento",
+            )
+            if data_lancamento is None:
+                continue
+
+            mes = self._month_key(data_lancamento)
+            valor_total = float(valor)
+            classificacao_padrao = (
+                f"{self._pick(lancamento, 'tipo_lancamento', 'TipoLancamento', 'tipo', 'Tipo') or ''}"
+            ).lower()
+
+            lancamento_id = self._pick(lancamento, "id", "Id")
+            rateios_lancamento = rateios_por_lancamento.get(str(lancamento_id), []) if lancamento_id else []
+
+            if rateios_lancamento:
+                self._accumulate_with_rateios(
+                    totals=totals,
+                    monthly=monthly,
+                    mes=mes,
+                    valor_total=valor_total,
+                    classificacao_padrao=classificacao_padrao,
+                    rateios_lancamento=rateios_lancamento,
+                    categorias_por_id=categorias_por_id,
+                )
+            else:
                 self._accumulate_without_rateio(
                     totals=totals,
                     monthly=monthly,
                     mes=mes,
-                    valor=valor,
+                    valor=valor_total,
                     classificacao=classificacao_padrao,
                 )
-                continue
 
-            self._accumulate_with_rateios(
-                totals=totals,
-                monthly=monthly,
-                mes=mes,
-                valor_total=valor,
-                classificacao_padrao=classificacao_padrao,
-                rateios_lancamento=rateios_lancamento,
-                categorias_por_id=categorias_por_id,
-            )
-
-        lucro_liquido_total = totals["receita"] - totals["custos"] - totals["taxas"]
-        ebitda_total = totals["receita"] - totals["custos"]
-        montly_data = [
+        lucro_liquido = totals["receita"] - totals["custos"] - totals["taxas"]
+        monthly_data = [
             {
                 "mes": mes,
-                "receita": int(values["receita"]),
-                "custos": int(values["custos"]),
-                "taxa": int(values["taxa"]),
+                "receita": round(values["receita"], 2),
+                "custos": round(values["custos"], 2),
+                "taxa": round(values["taxa"], 2),
             }
             for mes, values in sorted(monthly.items())
         ]
@@ -69,12 +83,18 @@ class SqlAlchemyFinancialRepository(FinancialRepository):
             receita=f"{totals['receita']:.2f}",
             custos=f"{totals['custos']:.2f}",
             taxas=f"{totals['taxas']:.2f}",
-            lucro_liquido=f"{lucro_liquido_total:.2f}",
-            ebitda=f"{ebitda_total:.2f}",
-            lucro=f"{lucro_liquido_total:.2f}",
-            lajida=f"{ebitda_total:.2f}",
-            montlyData=montly_data,
+            lucro_liquido=f"{lucro_liquido:.2f}",
+            ebitda=f"{lucro_liquido:.2f}",
+            lucro=f"{lucro_liquido:.2f}",
+            lajida=f"{lucro_liquido:.2f}",
+            montlyData=monthly_data,
         )
+
+    @staticmethod
+    def _month_key(value) -> str:
+        if isinstance(value, (datetime, date)):
+            return value.strftime("%Y-%m")
+        return str(value)[:7]
 
     def _build_categorias_por_id(self, categorias):
         categorias_por_id = {}
