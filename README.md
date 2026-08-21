@@ -40,6 +40,26 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
+## Configuração das variáveis de ambiente
+
+É necessário preencher o arquivo `.env` antes de iniciar a aplicação. Use o arquivo `.env.example` como base:
+
+```bash
+cp .env.example .env
+```
+
+As principais variáveis utilizadas pela aplicação são:
+
+- `API_VERSION`: define a versão da API e o prefixo utilizado nas rotas. Para usar a versão atual do projeto, mantenha `API_VERSION=v1`. Nesse caso, os endpoints e a documentação Swagger estarão disponíveis sob o prefixo `/v1`, como em `/v1/company/list` e `/v1/docs/`. Ao alterar esse valor, o prefixo das rotas também será alterado.
+- `COGNITO_USER_POOL_ID`: identifica o User Pool do Amazon Cognito usado para validar os tokens JWT dos endpoints protegidos. Informe o ID do User Pool correspondente ao ambiente, por exemplo:
+
+```env
+API_VERSION=v1
+COGNITO_USER_POOL_ID=seu_user_pool_id
+```
+
+O valor de `COGNITO_USER_POOL_ID` deve ser utilizado junto com a região configurada em `COGNITO_REGION`. Sem um User Pool válido, a autenticação dos endpoints protegidos não funcionará. Reinicie os containers após modificar o arquivo `.env`.
+
 ## Execução
 
 ```bash
