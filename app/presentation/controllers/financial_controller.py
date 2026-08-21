@@ -3,7 +3,7 @@ from dataclasses import asdict
 from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, jsonify
 
-from app.application.use_cases.company.get_financial_summary import GetFinancialSummaryUseCase
+from app.application.use_cases.finantial.get_finantial_summary import GetFinancialSummaryUseCase
 from app.infrastructure.containers import Container
 from app.presentation.middleware.auth import require_auth
 
