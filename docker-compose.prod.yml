@@ -1,0 +1,19 @@
+services:
+  api:
+    container_name: financial-flask-api-prod
+    ports:
+      - "5002:5000"
+    environment:
+      FLASK_DEBUG: "false"
+    restart: unless-stopped
+
+  db:
+    container_name: financial-flask-db-prod
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata_prod:

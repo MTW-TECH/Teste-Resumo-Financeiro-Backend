@@ -1,0 +1,21 @@
+services:
+  api:
+    container_name: financial-flask-api-hml
+    build: null
+    image: ${DOCKERHUB_IMAGE:?Set DOCKERHUB_IMAGE to a Docker Hub image, for example your-dockerhub-user/financial-flask-api:latest}
+    ports:
+      - "5001:5000"
+    environment:
+      FLASK_DEBUG: "false"
+    restart: unless-stopped
+
+  db:
+    container_name: financial-flask-db-hml
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_hml:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata_hml:
