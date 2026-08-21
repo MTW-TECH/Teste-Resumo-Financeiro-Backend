@@ -37,6 +37,7 @@ run.py
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 ## Run
@@ -53,6 +54,34 @@ The API will be available at `http://localhost:5000`.
 - OpenAPI JSON: `http://localhost:5000/v1/docs/openapi.json`
 
 The documentation routes are public and are not protected by JWT. Business endpoints still require a bearer token.
+
+## Tests
+
+Use Docker to run tests in a consistent environment.
+
+Start the database service:
+
+```bash
+docker compose up -d db
+```
+
+Run only endpoint tests (`/company/list`, `/financial/financialSummary/`, `/user/me`):
+
+```bash
+docker compose run --rm api sh -lc "pip install --no-cache-dir -r requirements-dev.txt >/tmp/pip-tests.log && pytest -q tests/presentation/controllers/test_protected_endpoints.py"
+```
+
+Run endpoint tests with coverage:
+
+```bash
+docker compose run --rm api sh -lc "pip install --no-cache-dir -r requirements-dev.txt >/tmp/pip-tests.log && pytest -q --cov=app --cov-report=term-missing tests/presentation/controllers/test_protected_endpoints.py"
+```
+
+Run the full test suite with coverage:
+
+```bash
+docker compose run --rm api sh -lc "pip install --no-cache-dir -r requirements-dev.txt >/tmp/pip-tests.log && pytest -q --cov=app --cov-report=term-missing"
+```
 
 ## Example requests
 
